@@ -21,4 +21,9 @@ var server = app.listen(8001, function() {
   console.log('Nodejs express app listening at http://%s:%s', host, port);
 });
 
-io.listen(server);
+var socket = io(server);
+socket.on('connection', function(socket) {
+  setInterval(function() {
+    socket.emit('message', {'message': 'hello world'});
+  }, 5000);
+});
