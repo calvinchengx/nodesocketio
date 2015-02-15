@@ -1,39 +1,24 @@
 'use strict';
 
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
+var express = require('express');
+var app = express();
+var io = require('socket.io');
 
-var server = http.createServer(function(request, response){
-  console.log('Connection');
-  var path = url.parse(request.url).pathname;
-  console.log(path);
+app.engine('.html', require('ejs').__express);
+app.use('/static', express.static(__dirname + '/dist'));
 
-  switch(path) {
-    case '/':
-      response.writeHead(200, {'Content-Type': 'text/html'});
-      response.write('hello world');
-      response.end();
-      break;
-    case '/socket.html':
-      fs.readFile(__dirname + path, function(error, data) {
-        if (error) {
-          response.writeHead(404);
-          response.write('opps this doesn\'t exist - 404');
-        } else {
-          response.writeHead(200, {'Content-Type': 'text/html'});
-          response.write(data, 'utf8');
-        }
-        response.end();
-      });
-      break;
-    default: 
-      response.writeHead(404);
-      response.write('opps this does\'t exist - 404');
-      response.end();
-      break;
-  }
-
+app.get('/', function(req, res) {
+  res.send('hello world');
 });
 
-server.listen(8001);
+app.get('/socket.html', function(req, res) {
+  res.render('socket.html');
+});
+
+var server = app.listen(8001, function() {
+  var host = server.address().address;
+  var port = server.address().port;
+  console.log('Nodejs express app listening at http://%s:%s', host, port);
+});
+
+io.listen(server);
