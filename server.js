@@ -25,5 +25,6 @@ var socket = io(server);
 socket.on('connection', function(socket) {
   setInterval(function() {
     socket.emit('message', {'message': 'hello world'});
+    socket.emit('reload');
   }, 5000);
 });
